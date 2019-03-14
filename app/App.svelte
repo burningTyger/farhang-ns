@@ -1,36 +1,70 @@
-<page>
-    <actionBar title="Autocomplete Example"></actionBar>
-    <stackLayout ios:backgroundColor="#CDCECE" padding="5">
-        <label text="Select country"></label>
-        <radAutoCompleteTextView  hint="select country" suggestMode="Suggest" displayMode="Tokens"
-            items="{items}">
-            <radAutoCompleteTextView.suggestionView>
-                <suggestionView suggestionViewHeight="300" />
-            </radAutoCompleteTextView.suggestionView>
-
+<page actionBarHidden="true">
+    <stackLayout padding="5">
+        <label text="Farhang.im durchsuchen"></label>
+        <textField bind:text="{term}" hint="Deutsch oder persisch" />
+        {#if lemmas.length === 0}
+            <label text="Farhang.im" class="home"></label>
+        {/if}
+        <listView items="{lemmas}" style="height:75%" on:itemTap="{showLemma}">
             <Template let:item>
-                <stackLayout orientation="vertical" padding="10">
-                     <label text="{item.text}" />
-                </stackLayout>
+                {#if item.id === selectedItem.id}
+                    {#each translations as t}
+                        <label class="list-group-item-text list-item active" text="{`${t.source}: ${t.target}`}" textWrap="true"/>
+                    {/each}
+                {:else}
+                    <label class="list-group-item-heading list-item" text="{item.lemma}" textWrap="true" />
+                {/if}
             </Template>
- 
-        </radAutoCompleteTextView>
+        </listView>
     </stackLayout>
 </page>
 
 <script>
-    import { TokenModel } from 'nativescript-ui-autocomplete';
-    import { ObservableArray } from "tns-core-modules/data/observable-array";
     import { Template } from 'svelte-native/components';
-    const countries = ["Australia", "Albania", "Austria", "Argentina", "Maldives", "Bulgaria", "Belgium", "Cyprus", "Italy", "Japan",
-        "Denmark", "Finland", "France", "Germany", "Greece", "Hungary", "Ireland",
-        "Latvia", "Luxembourg", "Macedonia", "Moldova", "Monaco", "Netherlands", "Norway",
-        "Poland", "Romania", "Russia", "Sweden", "Slovenia", "Slovakia", "Turkey", "Ukraine",
-        "Vatican City", "Chad", "China", "Chile"];
+    import * as http from 'tns-core-modules/http'
 
-    let items = new ObservableArray();
-
-    for (let i = 0; i < countries.length; i++) {
-        items.push(new TokenModel(countries[i], undefined));
+    let term = ''
+    let lemmas = []
+    let translations
+    let selectedItem = {}
+    $:  if (term.length > 1) {
+        http.getJSON(`https://api.farhang.im/a/${term}`)
+            .then(res => setLemmas(res))
+    }
+    $: if (term.length === 0) lemmas = []
+    function setLemmas(res) {
+        lemmas = res
+    }
+    function showLemma (lemma) {
+        selectedItem = lemma.view.bindingContext;
+        http.getJSON(`https://api.farhang.im/g/${selectedItem.id}`)
+            .then(res => {
+                translations = res
+                lemmas = Array.from(lemmas)
+            })
     }
 </script>
+
+<style>
+textField {
+  font-size: 20;
+  color:black;
+  margin: 5;
+  }
+.list-item {
+  font-size: 20;
+  color: black;
+  margin-left: 20;
+  padding-top: 5;
+  padding-bottom: 10;
+}
+.list-item.active {
+  font-weight: bold;
+  color: black;
+}
+
+.home {
+  font-size: 40;
+  text-align: center;
+}
+</style>

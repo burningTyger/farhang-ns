@@ -1,6 +1,6 @@
 {
     "nativescript": {
-        "id": "io.github.halfnelson.sveltenativetemplate",
+        "id": "im.farhang.app",
         "tns-ios": {
             "version": "5.2.0"
         },
@@ -9,12 +9,11 @@
         }
     },
     "main": "app.js",
-    "description": "Svelte/NativeScript Template Application",
-    "license": "SEE LICENSE IN <your-license-filename>",
+    "description": "Farhang App",
+    "license": "MIT",
     "repository": "<fill-your-repository-here>",
     "dependencies": {
         "nativescript-theme-core": "~1.0.4",
-        "nativescript-ui-autocomplete": "^4.0.0",
         "svelte-native": "^0.1.5",
         "tns-core-modules": "~5.2.0"
     },
@@ -24,7 +23,5 @@
         "svelte": "^3.0.0-beta.8",
         "svelte-loader": "halfnelson/svelte-loader#fix-virtual-purge",
         "svelte-native-preprocessor": "0.1.1"
-    },
-    "gitHead": "59b6da006346fedb5bb201fcc9cd7d204a69a82f",
-    "readme": "NativeScript Application"
+    }
 }
